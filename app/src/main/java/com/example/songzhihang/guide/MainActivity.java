@@ -1,6 +1,8 @@
 package com.example.songzhihang.guide;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
@@ -81,13 +85,26 @@ public class MainActivity extends AppCompatActivity {
         if (null == img) {
             return;
         }
-        Glide.clear(img);
+//        Glide.clear(img);
         Glide.with(mContext)
-                .load(url)
-//                .placeholder(placeholder)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(img);
+                .load(R.drawable.img1)
+                .asBitmap()
+                .error(R.mipmap.ic_launcher)
+                .placeholder(R.mipmap.ic_launcher)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Log.e(TAG, "onResourceReady: " );
+                        img.setImageBitmap(resource);
+                    }
 
+                    @Override
+                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                        Log.e(TAG, "onLoadFailed: ");
+                        super.onLoadFailed(e, errorDrawable);
+                        img.setImageDrawable(errorDrawable);
+                    }
+                });
 //        DrawableTypeRequest<String> mDrawableTypeRequest = Glide.with(mContext)
 //                .load(url);
 //        mDrawableTypeRequest.dontAnimate();
